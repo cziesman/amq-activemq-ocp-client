@@ -1,0 +1,16 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss:SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M:%line - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.springframework" level="info"/>
+    <logger name="org.springframework.jms" level="info"/>
+    <logger name="org.springframework.jms.annotation" level="info"/>
+    <logger name="com.redhat" level="trace"/>
+</configuration>
