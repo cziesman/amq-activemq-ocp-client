@@ -54,6 +54,8 @@ Add the secret to the deployment config.
 
     oc set volume dc/amq-activemq-ocp-client --add --name=ex-aao-amq-secret --type=secret --secret-name='ex-aao-amq-secret' --mount-path=/client/certs
 
+The client application will redeploy and will connect successfully to the AMQ broker.
+
 ## Configure the application to use the broker service.
 
 The default configuration of the application connects via the external route for the AMQ broker, e.g.,
@@ -76,3 +78,13 @@ In order to use the service address, we need to update the deployment config to 
 This will cause Spring to read the necessary values from the `application-openshift.properties` file.
 The client application will redeploy automatically, and the new instance will connect to the AMQ broker 
 using the service address instead of the external route.
+
+## Send a message.
+
+A very basic web interface is available at http://amq-activemq-ocp-client-amq-client.apps-crc.testing/send,
+or whatever the route address is for your cluster. This example assumes that the application is
+running in a Code Ready Container.
+
+This interface allows you to send a single text message to the AMQ broker using the destination `test.foo`.
+Every time a message is sent, a message will be logged on the application client. These messages can be viewed
+either in the web console for the corresponding pod or on the command line.
