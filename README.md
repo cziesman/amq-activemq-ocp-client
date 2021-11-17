@@ -2,7 +2,7 @@
 
 To run this application on OCP, you will need to perform the following configuration steps.
 
-##Add a new application
+## Add a new application
 
 Create a new project on OCP called `amq-client`.
 
@@ -24,7 +24,7 @@ After the application build has completed, deployment will fail because the trus
 connection using SSL has not been configured. The following section describes the necessary steps to make a
 trust store accessible to the AMQ client application.
 
-##Configure a trust store for one-way TLS.
+## Configure a trust store for one-way TLS.
 
 The following steps assume that the certificate is the same one that was used to configure SSL on the 
 AMQ broker.
@@ -54,7 +54,7 @@ Add the secret to the deployment config.
 
     oc set volume dc/amq-activemq-ocp-client --add --name=ex-aao-amq-secret --type=secret --secret-name='ex-aao-amq-secret' --mount-path=/client/certs
 
-##Configure the application to use the broker service.
+## Configure the application to use the broker service.
 
 The default configuration of the application connects via the external route for the AMQ broker, e.g.,
 
