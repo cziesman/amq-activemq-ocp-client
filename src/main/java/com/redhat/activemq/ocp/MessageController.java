@@ -10,6 +10,12 @@ public class MessageController {
     @Autowired
     private Producer producer;
 
+    @GetMapping("/")
+    public String index() {
+
+        return "redirect:/send";
+    }
+
     @GetMapping("/send")
     public String send() {
 
