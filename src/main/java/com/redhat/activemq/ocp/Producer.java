@@ -12,7 +12,7 @@ public class Producer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Producer.class);
 
-    @Value("${destination.name}")
+    @Value("${producer.name}")
     private String destinationName;
 
     @Autowired

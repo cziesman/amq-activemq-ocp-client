@@ -10,7 +10,7 @@ public class Consumer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Consumer.class);
 
-    @JmsListener(destination = "${destination.name}")
+    @JmsListener(destination = "${consumer.name}")
     public void processMsg(String message) {
 
         LOG.info("============= Received: " + message);
