@@ -21,6 +21,7 @@ public class Producer {
     public void sendMessage(String payload) {
 
         try {
+            LOG.info("============= Sending: " + payload + " to destination: " + destinationName);
             this.jmsTemplate.convertAndSend(destinationName, payload);
         } catch (Throwable t) {
             LOG.error(t.getMessage(), t);
