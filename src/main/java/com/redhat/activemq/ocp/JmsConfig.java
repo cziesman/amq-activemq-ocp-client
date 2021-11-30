@@ -68,7 +68,7 @@ public class JmsConfig {
     public CachingConnectionFactory cachingConnectionFactory(ActiveMQSslConnectionFactory connectionFactory) {
 
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
-        cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
+        //cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
         cachingConnectionFactory.setTargetConnectionFactory(connectionFactory);
         cachingConnectionFactory.afterPropertiesSet();
 
