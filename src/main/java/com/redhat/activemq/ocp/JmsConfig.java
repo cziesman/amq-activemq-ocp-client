@@ -60,8 +60,7 @@ public class JmsConfig {
 
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setCacheLevel(25);
-
+        factory.setConcurrency("3-10");
         return factory;
     }
 
