@@ -1,5 +1,8 @@
 package com.redhat.activemq.ocp;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +15,60 @@ public class Producer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Producer.class);
 
-    @Value("${queue.name}")
-    private String destinationName;
+    private final int cores = Runtime.getRuntime().availableProcessors();
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(cores);
 
     @Autowired
     public JmsTemplate jmsTemplate;
 
-    public void sendMessage(String payload) {
+    @Value("${destination.name}")
+    private String destinationName;
 
-        try {
-            LOG.info("============= Sending: " + payload + " to destination: " + destinationName);
-            this.jmsTemplate.convertAndSend(destinationName, payload);
-        } catch (Throwable t) {
-            LOG.error(t.getMessage(), t);
+    public void sendMessage(String payload, int numberOfMessages) {
+
+        LOG.info("cores: {}", cores);
+        LOG.info("numberOfMessages: {}", numberOfMessages);
+
+        int messagesPerExecutor = numberOfMessages / cores;
+        if (messagesPerExecutor > 0) {
+            for (int i = 0; i < cores; i++) {
+                executorService.execute(new MessageSender(messagesPerExecutor, payload));
+            }
         }
+
+        int remainder = numberOfMessages % cores;
+        if (remainder > 0) {
+            executorService.execute(new MessageSender(remainder, payload));
+        }
+
+        LOG.info("Finished sending all messages");
+    }
+
+    public class MessageSender implements Runnable {
+
+        final int messagesPerExecutor;
+
+        final String payload;
+
+        public MessageSender(int messagesPerExecutor, String payload) {
+
+            this.messagesPerExecutor = messagesPerExecutor;
+            this.payload = payload;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                for (int i = 0; i < messagesPerExecutor; i++) {
+                    jmsTemplate.convertAndSend(destinationName, payload);
+                }
+            } catch (Throwable t) {
+                LOG.error(t.getMessage(), t);
+            }
+        }
+
     }
 
 }

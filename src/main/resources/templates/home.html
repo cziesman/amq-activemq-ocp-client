@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>Send a message</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        <div><a href="/send">Send</a></div>
-    </body>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Send some messages</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+</head>
+<body>
+<h2>Send some messages</h2>
+
+<form action="#" th:action="@{/send}" method="post" th:object="${sendForm}">
+    <label for="numberOfMessages"># of messages:</label>
+    <input id="numberOfMessages" th:field="*{numberOfMessages}" type="text"/>
+    <p/>&nbsp;
+    <p/>&nbsp;
+    <input type="submit" value="Do it!"/>
+</form>
+
+</body>
 </html>

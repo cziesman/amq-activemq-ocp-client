@@ -1,6 +1,6 @@
 package com.redhat.activemq.ocp;
 
-import org.apache.activemq.ActiveMQSslConnectionFactory;
+import org.apache.qpid.jms.JmsConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,15 +35,6 @@ public class JmsConfig {
     @Value("${broker.maxConnections}")
     private Integer brokerMaxConnections;
 
-    @Value("${trustStorePath}")
-    private String trustStorePath;
-
-    @Value("${trustStorePassword}")
-    private String trustStorePassword;
-
-    @Value("${verifyHostName}")
-    private String verifyHostName;
-
     @Bean
     public JmsTemplate jmsTemplate(CachingConnectionFactory connectionFactory) {
 
@@ -65,10 +56,10 @@ public class JmsConfig {
     }
 
     @Bean
-    public CachingConnectionFactory cachingConnectionFactory(ActiveMQSslConnectionFactory connectionFactory) {
+    public CachingConnectionFactory cachingConnectionFactory(JmsConnectionFactory connectionFactory) {
 
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
-        //cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
+        cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
         cachingConnectionFactory.setTargetConnectionFactory(connectionFactory);
         cachingConnectionFactory.afterPropertiesSet();
 
@@ -76,13 +67,11 @@ public class JmsConfig {
     }
 
     @Bean
-    public ActiveMQSslConnectionFactory connectionFactory() throws Exception {
+    public JmsConnectionFactory jmsConnectionFactory() {
 
-        ActiveMQSslConnectionFactory factory = new ActiveMQSslConnectionFactory();
-        factory.setBrokerURL(remoteUri());
-        factory.setTrustStorePassword(trustStorePassword);
-        factory.setTrustStore(trustStorePath);
-        factory.setUserName(brokerUsername);
+        JmsConnectionFactory factory = new JmsConnectionFactory();
+        factory.setRemoteURI(remoteUri());
+        factory.setUsername(brokerUsername);
         factory.setPassword(brokerPassword);
 
         return factory;
@@ -94,7 +83,6 @@ public class JmsConfig {
                 .scheme(brokerScheme)
                 .host(brokerHost)
                 .port(brokerPort)
-                .queryParam("verifyHostName", verifyHostName)
                 .build();
 
         LOG.debug(uriComponents.toUriString());
