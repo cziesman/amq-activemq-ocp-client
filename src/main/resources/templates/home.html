@@ -1,31 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <title>Send some messages</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-</head>
-<body>
-<h2>Send some messages to Queue <span th:text="${queue}">foo</span></h2>
-
-<form action="#" th:action="@{/sendToQueue}" method="post" th:object="${sendForm}">
-    <label for="numberOfQueueMessages"># of Queue messages:</label>
-    <input id="numberOfQueueMessages" th:field="*{numberOfQueueMessages}" type="text"/>
-    <p/>&nbsp;
-    <p/>&nbsp;
-    <input type="submit" value="Do it!"/>
-</form>
-<h2>Send some messages to Topic <span th:text="${topic}">foo</span></h2>
-
-<form action="#" th:action="@{/sendToTopic}" method="post" th:object="${sendForm}">
-    <label for="numberOfTopicMessages"># of Topic messages:</label>
-    <input id="numberOfTopicMessages" th:field="*{numberOfTopicMessages}" type="text"/>
-    <p/>&nbsp;
-    <p/>&nbsp;
-    <input type="submit" value="Do it!"/>
-</form>
-
-</body>
+    <head>
+        <title>Send some messages</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Send some messages to Queue [<span th:text="${queue}">foo</span>]</h2>
+            <form action="#" th:action="@{/sendToQueue}" method="post" th:object="${sendForm}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="col-form-label" for="numberOfQueueMessages">Number of messages to send:</label>
+                            <input class="form-control" id="numberOfQueueMessages" th:field="*{numberOfQueueMessages}" type="text"/>
+                        </div>
+                        <div class="form-group float-right">
+                            <input class="btn btn-primary" type="submit" value="Do it!"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr/>
+            <h2>Send some messages to Topic [<span th:text="${topic}">foo</span>]</h2>
+            <form action="#" th:action="@{/sendToTopic}" method="post" th:object="${sendForm}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="col-form-label" for="numberOfTopicMessages">Number of messages to send:</label>
+                            <input class="form-control" id="numberOfTopicMessages" th:field="*{numberOfTopicMessages}" type="text"/>
+                        </div>
+                        <div class="form-group float-right">
+                            <input class="btn btn-primary" type="submit" value="Do it!"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
 </html>
