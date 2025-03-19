@@ -37,14 +37,14 @@ public class JmsConfig {
     private Integer brokerMaxConnections;
 
     @Bean
-    public JmsTemplate queueJmsTemplate(JmsConnectionFactory jmsConnectionFactory) {
+    public JmsTemplate queueJmsTemplate() {
 
         return new JmsTemplate(queueConnectionFactory());
     }
 
     // ✅ JMS Template for Topics
     @Bean
-    public JmsTemplate topicJmsTemplate(JmsConnectionFactory jmsConnectionFactory) {
+    public JmsTemplate topicJmsTemplate() {
 
         JmsTemplate jmsTemplate = new JmsTemplate(topicConnectionFactory());
         jmsTemplate.setPubSubDomain(true); // Enable Topic mode
