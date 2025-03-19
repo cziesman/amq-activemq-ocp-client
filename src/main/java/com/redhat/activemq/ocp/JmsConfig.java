@@ -60,6 +60,7 @@ public class JmsConfig {
 
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(cachingConnectionFactory());
+        factory.setClientId("queue-client");
 
         return factory;
     }
@@ -71,6 +72,7 @@ public class JmsConfig {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(cachingConnectionFactory());
         factory.setPubSubDomain(true); // Enable Topic mode
+        factory.setClientId("topic-client");
 
         return factory;
     }
