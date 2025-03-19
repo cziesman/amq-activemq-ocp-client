@@ -1,6 +1,5 @@
 package com.redhat.activemq.ocp;
 
-import jakarta.jms.ConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,40 +35,32 @@ public class JmsConfig {
     @Value("${broker.maxConnections}")
     private Integer brokerMaxConnections;
 
+    private CachingConnectionFactory cachingConnectionFactory;
+
+    private JmsConnectionFactory jmsConnectionFactory;
+
     @Bean
     public JmsTemplate queueJmsTemplate() {
 
-        return new JmsTemplate(queueConnectionFactory());
+        return new JmsTemplate(cachingConnectionFactory());
     }
 
     // ✅ JMS Template for Topics
     @Bean
     public JmsTemplate topicJmsTemplate() {
 
-        JmsTemplate jmsTemplate = new JmsTemplate(topicConnectionFactory());
+        JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory());
         jmsTemplate.setPubSubDomain(true); // Enable Topic mode
 
         return jmsTemplate;
     }
 
     @Bean
-    public ConnectionFactory queueConnectionFactory() {
-
-        return cachingConnectionFactory();
-    }
-
-    // ✅ Topic (Multicast) Connection Factory
-    @Bean
-    public ConnectionFactory topicConnectionFactory() {
-
-        return cachingConnectionFactory();
-    }
-
-    @Bean
     public DefaultJmsListenerContainerFactory queueListenerContainerFactory() {
 
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(queueConnectionFactory());
+        factory.setConnectionFactory(cachingConnectionFactory());
+
         return factory;
     }
 
@@ -78,27 +69,32 @@ public class JmsConfig {
     public DefaultJmsListenerContainerFactory topicListenerContainerFactory() {
 
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(topicConnectionFactory());
+        factory.setConnectionFactory(cachingConnectionFactory());
         factory.setPubSubDomain(true); // Enable Topic mode
+
         return factory;
     }
 
     private CachingConnectionFactory cachingConnectionFactory() {
 
-        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(jmsConnectionFactory());
-        cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
+        if (cachingConnectionFactory == null) {
+            cachingConnectionFactory = new CachingConnectionFactory(jmsConnectionFactory());
+            cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
+        }
 
         return cachingConnectionFactory;
     }
 
     private JmsConnectionFactory jmsConnectionFactory() {
 
-        JmsConnectionFactory factory = new JmsConnectionFactory();
-        factory.setRemoteURI(remoteUri());
-        factory.setUsername(brokerUsername);
-        factory.setPassword(brokerPassword);
+        if (jmsConnectionFactory == null) {
+            jmsConnectionFactory = new JmsConnectionFactory();
+            jmsConnectionFactory.setRemoteURI(remoteUri());
+            jmsConnectionFactory.setUsername(brokerUsername);
+            jmsConnectionFactory.setPassword(brokerPassword);
+        }
 
-        return factory;
+        return jmsConnectionFactory;
     }
 
     private String remoteUri() {
