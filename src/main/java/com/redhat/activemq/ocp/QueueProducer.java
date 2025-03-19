@@ -44,7 +44,7 @@ public class QueueProducer {
             executorService.execute(new MessageSender(remainder, payload));
         }
 
-        LOG.info("Finished sending all messages");
+        LOG.info("Finished sending all messages to {}", destinationName);
     }
 
     public class MessageSender implements Runnable {
