@@ -3,32 +3,28 @@ package com.redhat.activemq.ocp;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
-import jakarta.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import org.springframework.lang.NonNullApi;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Producer {
+public class TopicProducer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Producer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TopicProducer.class);
 
     private final int cores = Runtime.getRuntime().availableProcessors();
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(cores);
 
     @Autowired
+    @Qualifier("topicJmsTemplate")
     public JmsTemplate jmsTemplate;
 
-    @Value("${destination.name}")
+    @Value("${topic.name}")
     private String destinationName;
 
     public void sendMessage(String payload, int numberOfMessages) {
@@ -69,8 +65,7 @@ public class Producer {
             try {
                 for (int i = 0; i < messagesPerExecutor; i++) {
 
-                    jmsTemplate.send(destinationName, session -> session.createTextMessage(payload));
-//                    jmsTemplate.convertAndSend(destinationName, payload);
+                    jmsTemplate.convertAndSend("topic://" + destinationName, payload);
                 }
             } catch (Throwable t) {
                 LOG.error(t.getMessage(), t);

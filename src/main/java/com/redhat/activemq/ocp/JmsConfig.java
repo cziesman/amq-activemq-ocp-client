@@ -1,5 +1,6 @@
 package com.redhat.activemq.ocp;
 
+import jakarta.jms.ConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,38 +37,61 @@ public class JmsConfig {
     private Integer brokerMaxConnections;
 
     @Bean
-    public JmsTemplate jmsTemplate(CachingConnectionFactory connectionFactory) {
+    public JmsTemplate queueJmsTemplate(JmsConnectionFactory jmsConnectionFactory) {
 
-        JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setConnectionFactory(connectionFactory);
+        return new JmsTemplate(queueConnectionFactory());
+    }
 
-        jmsTemplate.afterPropertiesSet();
+    // ✅ JMS Template for Topics
+    @Bean
+    public JmsTemplate topicJmsTemplate(JmsConnectionFactory jmsConnectionFactory) {
+
+        JmsTemplate jmsTemplate = new JmsTemplate(topicConnectionFactory());
+        jmsTemplate.setPubSubDomain(true); // Enable Topic mode
 
         return jmsTemplate;
     }
 
     @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(CachingConnectionFactory connectionFactory) {
+    public ConnectionFactory queueConnectionFactory() {
 
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("3-10");
-        return factory;
+        return cachingConnectionFactory();
+    }
+
+    // ✅ Topic (Multicast) Connection Factory
+    @Bean
+    public ConnectionFactory topicConnectionFactory() {
+
+        return cachingConnectionFactory();
     }
 
     @Bean
-    public CachingConnectionFactory cachingConnectionFactory(JmsConnectionFactory connectionFactory) {
+    public DefaultJmsListenerContainerFactory queueListenerContainerFactory() {
 
-        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(queueConnectionFactory());
+        return factory;
+    }
+
+    // ✅ Listener Factory for Topics (Caching enabled)
+    @Bean
+    public DefaultJmsListenerContainerFactory topicListenerContainerFactory() {
+
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(topicConnectionFactory());
+        factory.setPubSubDomain(true); // Enable Topic mode
+        return factory;
+    }
+
+    private CachingConnectionFactory cachingConnectionFactory() {
+
+        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory(jmsConnectionFactory());
         cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
-        cachingConnectionFactory.setTargetConnectionFactory(connectionFactory);
-        cachingConnectionFactory.afterPropertiesSet();
 
         return cachingConnectionFactory;
     }
 
-    @Bean
-    public JmsConnectionFactory jmsConnectionFactory() {
+    private JmsConnectionFactory jmsConnectionFactory() {
 
         JmsConnectionFactory factory = new JmsConnectionFactory();
         factory.setRemoteURI(remoteUri());
@@ -89,4 +113,5 @@ public class JmsConfig {
 
         return String.format("failover:(%s)", uriComponents.toUriString());
     }
+
 }
