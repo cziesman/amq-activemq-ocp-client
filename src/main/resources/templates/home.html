@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 </head>
 <body>
-<h2>Send some messages to a queue</h2>
+<h2>Send some messages to Queue <span th:text="${queue}">foo</span></h2>
 
 <form action="#" th:action="@{/sendToQueue}" method="post" th:object="${sendForm}">
     <label for="numberOfQueueMessages"># of Queue messages:</label>
@@ -17,7 +17,7 @@
     <p/>&nbsp;
     <input type="submit" value="Do it!"/>
 </form>
-<h2>Send some messages to a queue</h2>
+<h2>Send some messages to Topic <span th:text="${topic}">foo</span></h2>
 
 <form action="#" th:action="@{/sendToTopic}" method="post" th:object="${sendForm}">
     <label for="numberOfTopicMessages"># of Topic messages:</label>

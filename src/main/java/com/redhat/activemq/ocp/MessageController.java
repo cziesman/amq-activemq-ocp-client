@@ -34,6 +34,8 @@ public class MessageController {
     public String home(Model model) {
 
         model.addAttribute("sendForm", new SendForm());
+        model.addAttribute("queue", queueName);
+        model.addAttribute("topic", topicName);
 
         return "home";
     }
