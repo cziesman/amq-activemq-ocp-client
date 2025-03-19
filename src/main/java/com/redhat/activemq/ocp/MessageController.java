@@ -43,7 +43,7 @@ public class MessageController {
 
         queueProducer.sendMessage("Some useless message content.", sendForm.numberOfQueueMessages);
 
-        model.addAttribute("numberOfQueueMessages", sendForm.numberOfQueueMessages);
+        model.addAttribute("numberOfMessages", sendForm.numberOfQueueMessages);
         model.addAttribute("destination", queueName);
 
         return "sent";
@@ -52,9 +52,9 @@ public class MessageController {
     @PostMapping(value = "sendToTopic", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String sendToTopic(SendForm sendForm, Model model) {
 
-        queueProducer.sendMessage("Some useless message content.", sendForm.numberOfTopicMessages);
+        topicProducer.sendMessage("Some useless message content.", sendForm.numberOfTopicMessages);
 
-        model.addAttribute("numberOfTopicMessages", sendForm.numberOfTopicMessages);
+        model.addAttribute("numberOfMessages", sendForm.numberOfTopicMessages);
         model.addAttribute("destination", topicName);
 
         return "sent";
