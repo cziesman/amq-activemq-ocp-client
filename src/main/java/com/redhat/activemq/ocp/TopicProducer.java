@@ -65,7 +65,7 @@ public class TopicProducer {
             try {
                 for (int i = 0; i < messagesPerExecutor; i++) {
 
-                    jmsTemplate.convertAndSend(destinationName, payload);
+                    jmsTemplate.send(destinationName, session -> session.createTextMessage(payload));
                 }
             } catch (Throwable t) {
                 LOG.error(t.getMessage(), t);

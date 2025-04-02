@@ -1,113 +1,77 @@
 package com.redhat.activemq.ocp;
 
-import org.apache.qpid.jms.JmsConnectionFactory;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Configuration
 public class JmsConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(JmsConfig.class);
 
-    @Value("${broker.scheme}")
-    private String brokerScheme;
+    @Value("${spring.artemis.broker-url}")
+    private String jmsUrl;
 
-    @Value("${broker.host}")
-    private String brokerHost;
+    @Value("${spring.artemis.user}")
+    private String user;
 
-    @Value("${broker.port}")
-    private String brokerPort;
+    @Value("${spring.artemis.password}")
+    private String password;
 
-    @Value("${broker.username}")
-    private String brokerUsername;
+    @Value("${spring.artemis.pool.max-connections}")
+    private Integer maxConnections;
 
-    @Value("${broker.password}")
-    private String brokerPassword;
+    @Value("${spring.artemis.trust-store}")
+    private String trustStorePath;
 
-    @Value("${broker.maxConnections}")
-    private Integer brokerMaxConnections;
+    @Value("${spring.artemis.trust-store-password}")
+    private String trustStorePassword;
 
-    private CachingConnectionFactory cachingConnectionFactory;
+    @Value("${spring.artemis.key-store}")
+    private String keyStorePath;
 
-    private JmsConnectionFactory jmsConnectionFactory;
+    @Value("${spring.artemis.key-store-password}")
+    private String keyStorePassword;
 
     @Bean
-    public JmsTemplate queueJmsTemplate() {
+    public JmsTemplate queueJmsTemplate(ConnectionFactory connectionFactory) throws JMSException {
 
-        return new JmsTemplate(cachingConnectionFactory());
+        return new JmsTemplate(connectionFactory);
     }
 
-    // ✅ JMS Template for Topics
     @Bean
-    public JmsTemplate topicJmsTemplate() {
+    public JmsTemplate topicJmsTemplate(ConnectionFactory connectionFactory) throws JMSException {
 
-        JmsTemplate jmsTemplate = new JmsTemplate(cachingConnectionFactory());
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(true); // Enable Topic mode
 
         return jmsTemplate;
     }
 
     @Bean
-    public DefaultJmsListenerContainerFactory queueListenerContainerFactory() {
+    public ActiveMQConnectionFactory connectionFactory() throws JMSException, NoSuchAlgorithmException, KeyManagementException {
 
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(cachingConnectionFactory());
+        System.setProperty("javax.net.ssl.keyStore", keyStorePath);
+        System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);
+        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
 
-        return factory;
-    }
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+        connectionFactory.setBrokerURL(jmsUrl);
+        connectionFactory.setUser(user);
+        connectionFactory.setPassword(password);
+        connectionFactory.setThreadPoolMaxSize(maxConnections);
 
-    // ✅ Listener Factory for Topics (Caching enabled)
-    @Bean
-    public DefaultJmsListenerContainerFactory topicListenerContainerFactory() {
-
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(cachingConnectionFactory());
-        factory.setPubSubDomain(true); // Enable Topic mode
-
-        return factory;
-    }
-
-    private CachingConnectionFactory cachingConnectionFactory() {
-
-        if (cachingConnectionFactory == null) {
-            cachingConnectionFactory = new CachingConnectionFactory(jmsConnectionFactory());
-            cachingConnectionFactory.setSessionCacheSize(brokerMaxConnections);
-        }
-
-        return cachingConnectionFactory;
-    }
-
-    private JmsConnectionFactory jmsConnectionFactory() {
-
-        if (jmsConnectionFactory == null) {
-            jmsConnectionFactory = new JmsConnectionFactory();
-            jmsConnectionFactory.setRemoteURI(remoteUri());
-            jmsConnectionFactory.setUsername(brokerUsername);
-            jmsConnectionFactory.setPassword(brokerPassword);
-        }
-
-        return jmsConnectionFactory;
-    }
-
-    private String remoteUri() {
-
-        UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .scheme(brokerScheme)
-                .host(brokerHost)
-                .port(brokerPort)
-                .build();
-
-        LOG.debug(uriComponents.toUriString());
-
-        return String.format("failover:(%s)", uriComponents.toUriString());
+        return connectionFactory;
     }
 
 }

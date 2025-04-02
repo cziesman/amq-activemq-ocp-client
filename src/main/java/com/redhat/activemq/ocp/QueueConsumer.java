@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class QueueConsumer {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueueConsumer.class);
 
-    @JmsListener(destination = "${queue.name}", containerFactory = "queueListenerContainerFactory")
+    @JmsListener(destination = "${queue.name}")
     public void processMsg(String message) {
 
         LOG.info("============= Received: {}", message);

@@ -1,0 +1,31 @@
+
+queue:
+  name: test.foo
+topic:
+  name: test.bar
+  queueName: test.bar::test.bar1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  artemis:
+    broker-url: tcp://ocp-amq-broker-61617-ocp-amq-broker.apps.cluster-jwkmv.jwkmv.sandbox2292.opentlc.com:443?sslEnabled=true
+    user: redhat
+    password: redhat
+    pool:
+      max-connections: 10
+    trust-store: /Users/cziesman/client/certs/truststore.jks
+    trust-store-password: changeit
+    key-store: /Users/cziesman/client/certs/client.jks
+    key-store-password: changeit
+#  jms:
+#    cache:
+#      enabled: true
+
+#amq:
+#  trustStorePath: /Users/cziesman/client/certs/truststore.jks
+#  trustStorePassword: changeit

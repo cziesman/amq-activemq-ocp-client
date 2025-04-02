@@ -66,7 +66,6 @@ public class QueueProducer {
                 for (int i = 0; i < messagesPerExecutor; i++) {
 
                     jmsTemplate.send(destinationName, session -> session.createTextMessage(payload));
-//                    jmsTemplate.convertAndSend(destinationName, payload);
                 }
             } catch (Throwable t) {
                 LOG.error(t.getMessage(), t);

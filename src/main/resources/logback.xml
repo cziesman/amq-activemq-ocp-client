@@ -9,6 +9,8 @@
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
+    <logger name="org.apache.activemq.artemis" level="info"/>
+    <logger name="org.thymeleaf" level="info"/>
     <logger name="org.springframework" level="info"/>
     <logger name="org.springframework.jms" level="info"/>
     <logger name="org.springframework.jms.annotation" level="info"/>
