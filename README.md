@@ -88,3 +88,18 @@ running in a Code Ready Container.
 This interface allows you to send a single text message to the AMQ broker using the destination `test.foo`.
 Every time a message is sent, a message will be logged on the application client. These messages can be viewed
 either in the web console for the corresponding pod or on the command line.
+
+
+# TLS client setup
+
+
+    cd /Users/cziesman/client/certs
+
+    oc cp ocp-amq-broker-0:/opt/amq/keystore/truststore.jks ./truststore.jks
+
+    keytool -genkeypair -alias client -keyalg RSA -keystore client.jks -storepass changeit -keypass changeit -dname "CN=Client, OU=MyOrg, O=MyCompany, L=City, S=State, C=US"
+
+    keytool -exportcert -alias broker-cert -keystore truststore.jks -file broker.crt -storepass changeit
+
+    keytool -importcert -alias broker-cert -file broker.crt -keystore client.jks -storepass changeit -noprompt
+

@@ -13,7 +13,7 @@ management:
 
 spring:
   artemis:
-    broker-url: tcp://ocp-amq-broker-61617-ocp-amq-broker.apps.cluster-jwkmv.jwkmv.sandbox2292.opentlc.com:443?sslEnabled=true
+    broker-url: tcp://ocp-amq-broker-61617-ocp-amq-broker.apps.cluster-jwkmv.jwkmv.sandbox2292.opentlc.com:443?sslEnabled=true&keyStorePath=%s&keyStorePassword=%s&trustStorePath=%s&trustStorePassword=%s
     user: redhat
     password: redhat
     pool:
@@ -22,10 +22,3 @@ spring:
     trust-store-password: changeit
     key-store: /Users/cziesman/client/certs/client.jks
     key-store-password: changeit
-#  jms:
-#    cache:
-#      enabled: true
-
-#amq:
-#  trustStorePath: /Users/cziesman/client/certs/truststore.jks
-#  trustStorePassword: changeit

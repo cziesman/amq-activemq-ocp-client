@@ -60,13 +60,12 @@ public class JmsConfig {
     @Bean
     public ActiveMQConnectionFactory connectionFactory() throws JMSException, NoSuchAlgorithmException, KeyManagementException {
 
-        System.setProperty("javax.net.ssl.keyStore", keyStorePath);
-        System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);
-        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
+        String tlsBrokerUrl = String.format(jmsUrl, keyStorePath, keyStorePassword, trustStorePath, trustStorePassword);
+
+        LOG.trace("{}", tlsBrokerUrl);
 
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-        connectionFactory.setBrokerURL(jmsUrl);
+        connectionFactory.setBrokerURL(tlsBrokerUrl);
         connectionFactory.setUser(user);
         connectionFactory.setPassword(password);
         connectionFactory.setThreadPoolMaxSize(maxConnections);
